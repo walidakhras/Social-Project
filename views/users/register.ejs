@@ -1,0 +1,39 @@
+<% layout('layouts/boilerplate')%>
+<h1 class="text-light">Register</h1>
+<form action="/register" method="POST" class="validated-form" novalidate enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label text-light" for="username">Username</label>
+        <input class="form-control bg-dark text-light" type="text" id="username" name="username" required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label text-light" for="email">Email</label>
+        <input class="form-control bg-dark text-light" type="email" id="email" name="email" required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label text-light" for="password">Password</label>
+        <input class="form-control bg-dark text-light" type="password" id="password" name="password" required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <div class="form-file custom-file">
+            <input type="file" class="form-file-input" id="image" name="image">
+            <label class="form-file-label" for="image">
+                <span class="form-file-text custom-file-label text-lg bg-dark text-light">Choose Profile Picture...</span>
+                <span class="form-file-button bg-dark text-light">Browse</span>
+            </label>
+        </div>
+    </div>
+
+    <input type="hidden" id="createdOn" name="createdOn" value="<%=new Date(Date.now()).getMonth() + 1%>/<%=new Date(Date.now()).getDate()%>/<%=new Date(Date.now()).getFullYear()%>">
+
+    <button class="btn btn-success">Register</button>
+</form>

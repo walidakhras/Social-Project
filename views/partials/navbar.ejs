@@ -1,0 +1,27 @@
+
+
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand text-light" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <!-- <a class="nav-link" href="/">Home</a> -->
+                <a class="nav-link text-light" href="/posts">All Posts</a>
+                <a class="nav-link text-light" href="/posts/new">New Post</a>
+            </div>
+            <div class="navbar-nav ml-auto">
+                <% if(!currentUser) {%>
+                <a class="nav-link text-light" href="/login">Login</a>
+                <a class="nav-link text-light" href="/register">Register</a>
+                <% } else {%>
+                <a class="nav-link text-light" href="/users/<%=currentUser._id%>">View Profile</a>
+                <a class="nav-link text-light" href="/logout">Logout</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,42 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <h1 class="text-center text-light">New Post</h1>
+    <div class="col-6 offset-3">
+        <form action="/posts" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label text-light" for="title">Post Title</label>
+                <input class="bg-dark text-light form-control" type="text" id="title" name="post[title]" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-light" for="body">Body</label>
+                <textarea class="bg-dark text-light form-control" type="text" id="body" name="post[body]"
+                    required></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-file custom-file">
+                    <input type="file" class="form-file-input" id="image" name="image" multiple>
+                    <label class="form-file-label" for="image">
+                        <span class="bg-dark form-file-text custom-file-label text-light">Choose image(s)...</span>
+                        <span class="bg-dark form-file-button text-light">Browse</span>
+                    </label>
+                </div>
+            </div>
+
+            <input type="hidden" id="date" name="post[created]" value="<%=new Date(Date.now()).getMonth() + 1%>/<%=new Date(Date.now()).getDate()%>/<%=new Date(Date.now()).getFullYear()%>">
+            
+
+            <div class="mb-3">
+                <button class="btn btn-success">Post!</button>
+            </div>
+        </form>
+        <a href="/posts" class="text-light">All Posts</a>
+    </div>
+</div>

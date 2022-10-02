@@ -1,0 +1,53 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <h1 class="text-center text-light">Edit Post</h1>
+    <div class="col-6 offset-3">
+        <form action="/posts/<%=post._id%>?_method=PUT" method="POST" novalidate class="validated-form"
+            enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label text-light" for="title">Title</label>
+                <input class="form-control bg-dark text-light" type="text" id="title" name="post[title]"
+                    value="<%=post.title %>" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-light" for="body">Body</label>
+                <textarea class="form-control bg-dark text-light" type="text" id="body" name="post[body]"
+                    required><%= post.body%></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-file custom-file">
+                    <input type="file" class="form-file-input" id="image" name="image" multiple>
+                    <label class="form-file-label" for="image">
+                        <span class="form-file-text custom-file-label bg-dark text-light">Add more image(s)...</span>
+                        <span class="form-file-button text-light bg-dark">Browse</span>
+                    </label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <% post.images.forEach(function(img, i) {  %>
+
+                <img src="<%=img.thumbnail %>" class="img-thumbnail" alt="">
+                <div class="form-check-inline">
+                    <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                </div>
+                <label class="text-light" for="image-<%=i%>">Delete?</label>
+                <% })%>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-info">Update Post</button>
+            </div>
+
+            <input type="hidden" id="date" name="post[created]" value="<%=new Date(Date.now()).getMonth() + 1%>/<%=new Date(Date.now()).getDate()%>/<%=new Date(Date.now()).getFullYear()%>">
+
+        </form>
+        <a class="text-light" href="/posts/<%= post._id%>">Back To Post</a>
+
+    </div>
+</div>
