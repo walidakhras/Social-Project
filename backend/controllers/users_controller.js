@@ -20,7 +20,6 @@ module.exports.register = async (req, res, next) => {
         }
         user.createdOn = createdOn;
         
-        // user.image = req.file.map(f => ({url: f.path, filename: f.filename}));
         const registeredUser = await User.register(user, password);
     
         req.login(registeredUser, err => {

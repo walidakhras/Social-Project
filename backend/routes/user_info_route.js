@@ -9,8 +9,9 @@ const users = require('../controllers/users_controller');
 router.route('/:id')
     .get(catchAsync(users.renderUserPage))
     .put(catchAsync(users.updateUser))
-    .delete(catchAsync(users.deleteUser));
+    .delete(catchAsync(users.deleteUser))
 
 router.get('/:id/edit', catchAsync(users.renderUserEditPage))
 
 module.exports = router;
+

@@ -14,7 +14,6 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./backend/models/user');
 const userController = require('./backend/controllers/users_controller')
-const helmet = require('helmet')
 const catchAsync = require('./utils/catchAsync');
 
 // Importing all routes
@@ -23,15 +22,16 @@ const postRoutes = require('./backend/routes/post_route');
 const replyRoutes = require('./backend/routes/replies_route');
 const userInfoRoutes = require('./backend/routes/user_info_route');
 const mongoSanitize = require('express-mongo-sanitize');
+
 const MongoStore = require('connect-mongo');
 
 
-const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/social-project';
+const database = process.env.DB_URL || 'mongodb://localhost:27017/social-project';
 
 //process.env.DB_URL
 //'mongodb://localhost:27017/social-project'
 
-mongoose.connect(dbURL, {
+mongoose.connect(database, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
@@ -40,20 +40,15 @@ mongoose.connect(dbURL, {
 
 
 const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
+db.on("error", console.error.bind(console, "Error connecting to database:"));
 db.once("open", () => {
-    console.log("Database connected");
+    console.log("Database successfully connected");
 });
-const secret = process.env.SECRET || 'test';
 
 const store = new MongoStore({
-    mongoUrl: dbURL,
-    secret,
+    mongoUrl: database,
+    secret: process.env.SECRET || 'testsecret',
     touchAfter: 34 * 3600
-})
-
-store.on("error", function(e) {
-    console.log("SESSION STORAGE ERROR", e)
 })
 
 const app = express();
@@ -70,14 +65,13 @@ app.use(mongoSanitize());
 
 
 const sessionConfig = {
-    store,
+    store: store,
     name: 'session',
-    secret,
+    secret: process.env.SECRET || 'testsecret',
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        // secure: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
@@ -89,12 +83,10 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
-
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
-    // console.log(req.session)
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
@@ -120,14 +112,13 @@ app.all('*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    const { statusCode = 500 } = err;
-    if (!err.message) err.message = 'Oh No, Something Went Wrong!'
+    const { statusCode } = err;
+    if (!statusCode) statusCode = 500;
+    if (!err.message) err.message = 'Error'
     res.status(statusCode).render('error', { err })
 })
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Connected to port ${port}.`)
-})
+app.listen(process.env.PORT || 3000);
+
 
 
