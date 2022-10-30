@@ -8,7 +8,6 @@ const multer = require('multer');
 const { storage } = require('../cloudinary/cloud');
 const upload = multer({ storage });
 
-const Post = require('../models/post');
 
 router.route('/')
     .get(catchAsync(posts.index))

@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const Post = require('../models/post')
 const Reply = require('../models/reply');
-const { cloudinary } = require("../cloudinary/cloud");
+const passport = require('passport');
 
 
 module.exports.renderRegister = (req, res) => {
@@ -33,39 +33,70 @@ module.exports.register = async (req, res, next) => {
     }
 };
 
+
 module.exports.renderLogin = (req, res) => {
     res.render('users/login');
 }
 
-module.exports.login = (req, res) => {
-    req.flash('success', 'Welcome back!');
-    const redirectUrl = req.session.returnTo || '/posts';
-    delete req.session.returnTo;
-    res.redirect(redirectUrl);
+
+module.exports.login = (req, res, next) => {
+	passport.authenticate("local", (err, user, info) => {
+		if (err || !user) {
+			req.flash("error", "Incorrect information!")
+			return res.redirect("users/login")
+        }
+        else if (!user) {
+            req.flash("error", "This user does not exist!")
+        }
+		 else {
+			req.logIn(user, (err) => {
+				if (err) {
+					req.flash("error", "Could not log in")
+					console.log(err)
+					res.redirect("users/login")
+					return next(err)
+				} else {
+					req.flash("success", `Welcome back, ${user.username}`)
+					return res.redirect("/posts")
+				}
+			})
+		}
+	}) (req, res, next);
 }
 
 module.exports.logout = (req, res) => {
-    req.logout();
-    req.flash('success', "Goodbye!");
-    res.redirect('/posts');
+    try {
+        req.logout();
+        req.flash('success', "Goodbye!");
+        res.redirect('/posts');
+    } catch (e) {
+        req.flash("error", "Error logging out")
+        res.redirect("/posts")
+    }
+
 }
 
 module.exports.deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+    
+
+        // const posts = await Post.find({ author: { $eq: id } });
+        await Post.deleteMany({ author: { $eq: id } });
+        await Reply.deleteMany({ author: { $eq: id }});
+    
+        await User.findByIdAndDelete(id);
+        
+        
+        req.flash('success', 'Successfully deleted user. Sorry to see you go!')
+        res.redirect('/posts')
+    } catch (e) {
+        req.flash("error", "Error deleting")
+        console.log(e.message)
+        res.redirect("/posts")
+    }
     const { id } = req.params;
-    
 
-    // const posts = await Post.find({ author: { $eq: id } });
-    await Post.deleteMany({ author: { $eq: id } });
-    await Reply.deleteMany({ author: { $eq: id }});
-
-
-    
-    // console.log(posts);
-    await User.findByIdAndDelete(id);
-    
-    
-    req.flash('success', 'Successfully deleted user. Sorry to see you go!')
-    res.redirect('/posts')
 }
 
 module.exports.renderUserEditPage = async (req, res) => {

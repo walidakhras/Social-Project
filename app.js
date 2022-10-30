@@ -13,14 +13,13 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./backend/models/user');
-const userController = require('./backend/controllers/users_controller')
-const catchAsync = require('./utils/catchAsync');
 
 // Importing all routes
 const userRoutes = require('./backend/routes/users_route');
 const postRoutes = require('./backend/routes/post_route');
 const replyRoutes = require('./backend/routes/replies_route');
-const userInfoRoutes = require('./backend/routes/user_info_route');
+
+
 const mongoSanitize = require('express-mongo-sanitize');
 
 const MongoStore = require('connect-mongo');
@@ -86,36 +85,16 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.use((req, res, next) => {
-    res.locals.currentUser = req.user;
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-    next();
-})
-
-app.use('/', userRoutes);
-app.use('/posts', postRoutes)
-app.use('/posts/:id/replies', replyRoutes)
-app.use('/users', userInfoRoutes)
-
-
 app.get('/', (req, res) => {
     res.render('home')
 });
 
-app.get('/aboutme', catchAsync(async (req, res) => {
-    res.render('aboutme');
-}))
+app.use('/', userRoutes);
+app.use('/posts', postRoutes)
+app.use('/posts/:id/replies', replyRoutes)
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404))
-})
-
-app.use((err, req, res, next) => {
-    const { statusCode } = err;
-    if (!statusCode) statusCode = 500;
-    if (!err.message) err.message = 'Error'
-    res.status(statusCode).render('error', { err })
 })
 
 app.listen(process.env.PORT || 3000);

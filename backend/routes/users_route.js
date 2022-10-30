@@ -1,13 +1,12 @@
-const express = require('express');
-const router = express.Router();
-const passport = require('passport');
-const catchAsync = require('../../utils/catchAsync');
-const User = require('../models/user');
+const express = require('express')
+const router = express.Router()
+const passport = require('passport')
+const catchAsync = require('../../utils/catchAsync')
+const User = require('../models/user')
 const users = require('../controllers/users_controller');
 
-
 const multer = require('multer'); // Needed for image upload
-const { storage } = require('../cloudinary/cloud'); // Use cloudinary
+const storage = require('../cloudinary/cloud').storage // Use cloudinary
 const upload = multer({ storage }); 
 
 router.route('/register')
@@ -21,6 +20,7 @@ router.route('/login')
 router.get('/logout', users.logout)
 
 router.route('/:id')
+    .delete(catchAsync(users.deleteUser))
     .put(catchAsync(users.updateUser))
     .delete(catchAsync(users.deleteUser));
 
